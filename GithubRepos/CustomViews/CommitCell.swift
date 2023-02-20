@@ -11,9 +11,9 @@ import UIKit
 class CommitCell: UITableViewCell {
     
     static let reuseID  = ReuseId.commitCell
-    let commitMessage   = GRTitleLabel(textAlighment: .left, fontSize: 16)
+    let commitMessage   = GRTitleLabel(textAlighment: .left, fontSize: 0)
     let committer       = GRSecondaryTitleLabel(fontSize: 15)
-    let commitDateLabel      = GRSecondaryTitleLabel(fontSize: 12)
+    let commitDateLabel = GRSecondaryTitleLabel(fontSize: 12)
     var htmlURL         : String!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -43,6 +43,7 @@ class CommitCell: UITableViewCell {
         commitDateLabel.textAlignment   = .right
         commitMessage.numberOfLines     = 3
         commitMessage.lineBreakMode     = .byWordWrapping
+        commitMessage.font              = UIFont.systemFont(ofSize: 16, weight: .semibold)
   
         let padding: CGFloat = 20
         

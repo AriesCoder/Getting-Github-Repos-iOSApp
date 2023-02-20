@@ -18,6 +18,7 @@
 		A190D4B5299EC5450066A92C /* BookmarkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A190D4B4299EC5450066A92C /* BookmarkCell.swift */; };
 		A190D4B7299F0D800066A92C /* PersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A190D4B6299F0D800066A92C /* PersistenceManager.swift */; };
 		A195635D2997748300879D0E /* SortMenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A195635C2997748300879D0E /* SortMenuCell.swift */; };
+		A19DA33629A03AC00058FB2E /* EmptyCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19DA33529A03AC00058FB2E /* EmptyCollectionView.swift */; };
 		A1C9F4512979F82D00AA0498 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9F4502979F82D00AA0498 /* AppDelegate.swift */; };
 		A1C9F4532979F82D00AA0498 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9F4522979F82D00AA0498 /* SceneDelegate.swift */; };
 		A1C9F45A2979F82F00AA0498 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1C9F4592979F82F00AA0498 /* Assets.xcassets */; };
@@ -56,6 +57,7 @@
 		A190D4B4299EC5450066A92C /* BookmarkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkCell.swift; sourceTree = "<group>"; };
 		A190D4B6299F0D800066A92C /* PersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceManager.swift; sourceTree = "<group>"; };
 		A195635C2997748300879D0E /* SortMenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortMenuCell.swift; sourceTree = "<group>"; };
+		A19DA33529A03AC00058FB2E /* EmptyCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCollectionView.swift; sourceTree = "<group>"; };
 		A1C9F44D2979F82D00AA0498 /* GithubRepos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GithubRepos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1C9F4502979F82D00AA0498 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A1C9F4522979F82D00AA0498 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -238,6 +240,7 @@
 			isa = PBXGroup;
 			children = (
 				A1C9F49D2994C9B300AA0498 /* GREmptyStateView.swift */,
+				A19DA33529A03AC00058FB2E /* EmptyCollectionView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -360,6 +363,7 @@
 				A1C9F497299382EB00AA0498 /* Repo.swift in Sources */,
 				A1C9F4792980E6EB00AA0498 /* GRAvtImgView.swift in Sources */,
 				A1C9F4892981D58800AA0498 /* User.swift in Sources */,
+				A19DA33629A03AC00058FB2E /* EmptyCollectionView.swift in Sources */,
 				A1C9F4512979F82D00AA0498 /* AppDelegate.swift in Sources */,
 				A1C9F49E2994C9B300AA0498 /* GREmptyStateView.swift in Sources */,
 				A1C9F4802981B1CC00AA0498 /* GRBodyLabel.swift in Sources */,

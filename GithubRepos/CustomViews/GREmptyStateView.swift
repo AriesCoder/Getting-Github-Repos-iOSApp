@@ -38,8 +38,8 @@ class GREmptyStateView: UIView {
         
         addSubview(msgLabel)
         
-        msgLabel.numberOfLines  = 4
-        msgLabel.textColor      = .secondaryLabel
+        msgLabel.numberOfLines  = 2
+        msgLabel.textColor      = .secondaryLabel.withAlphaComponent(0.5)
         
         NSLayoutConstraint.activate([
             msgLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor),
@@ -58,8 +58,8 @@ class GREmptyStateView: UIView {
         
         NSLayoutConstraint.activate([
             logoImgView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.9),
-            logoImgView.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.9),
-            logoImgView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -50),
+            logoImgView.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.7),
+            logoImgView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -50),
             logoImgView.centerXAnchor.constraint(equalTo: self.centerXAnchor)
         ])
     }

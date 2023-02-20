@@ -31,7 +31,7 @@ class BookmarkCell: UITableViewCell {
         repoNameLabel.text  = repo.name
         owner.text          = repo.owner.login
         ownerImg.downloadImg(fromURL: ownerAvtUrl)
-        languageLabel.text  = repo.language
+        languageLabel.text  = repo.language ?? "No language added"
         languageIcon.image  = UIHelper.configureLanguageLogo(with: repo.language ?? "No language added", to: languageIcon)
         
     }

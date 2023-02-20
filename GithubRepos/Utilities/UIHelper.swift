@@ -20,8 +20,8 @@ enum UIHelper {
         
         let flowLayout              = UICollectionViewFlowLayout()
         flowLayout.scrollDirection  = .horizontal
-        flowLayout.sectionInset     = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
-        flowLayout.itemSize         = CGSize(width: cellWidth, height: cellWidth + 30)
+        flowLayout.sectionInset     = UIEdgeInsets(top: cellSpacing, left: padding, bottom: cellSpacing, right: padding)
+        flowLayout.itemSize         = CGSize(width: cellWidth, height: cellWidth + 10)
         
         return flowLayout
         
@@ -61,4 +61,5 @@ enum UIHelper {
         }
         return repoImg.image!
     }
+
 }

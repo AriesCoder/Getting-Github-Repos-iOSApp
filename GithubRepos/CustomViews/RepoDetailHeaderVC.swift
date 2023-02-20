@@ -42,11 +42,11 @@ class RepoDetailHeaderVC: UIViewController {
         
         let repoLanguage = repo.language ?? "No language added"
         languageLogo.image = UIHelper.configureLanguageLogo(with: repoLanguage, to: languageLogo)
-//        configureLanguageLogo(with: repoLanguage, to: languageLogo)
         languageLabel.text          = repoLanguage
         languageLabel.textColor     = .systemOrange
             
         repoNameLabel.text          = repo.name
+        repoNameLabel.textColor     = UIColor(hue: 30/360, saturation: 1, brightness: 0.8, alpha: 1)
             
         externalURLImg.image        = Icons.externalURL
         externalURLLabel.textColor  = .tintColor
@@ -70,12 +70,14 @@ class RepoDetailHeaderVC: UIViewController {
     }
     
     @objc func labelTapped(){
-        let safariVC = SFSafariViewController(url: URL(string: repo.htmlUrl)!)
-            safariVC.preferredControlTintColor = .systemGreen
-            present(safariVC, animated: true)
-     
+        guard let url = URL(string: repo.htmlUrl) else {
+            presentGRAlert(title: "Invalid URL", message: "The url attached to this repository is invalid")
+            return
+        }
+        
+        presentSafariVC(with: url)
     }
-    
+   
     func addViews() {
         
         view.addSubview(languageLabel)
@@ -141,7 +143,7 @@ class RepoDetailHeaderVC: UIViewController {
             createdLabel.heightAnchor.constraint(equalToConstant: padding),
             createdLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
 
-            updateIcon.topAnchor.constraint(equalTo: createIcon.bottomAnchor, constant: textImgPadding),
+            updateIcon.topAnchor.constraint(equalTo: createIcon.bottomAnchor, constant: 5),
             updateIcon.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             updateIcon.heightAnchor.constraint(equalToConstant: 15),
             updateIcon.widthAnchor.constraint(equalTo: updateIcon.heightAnchor),

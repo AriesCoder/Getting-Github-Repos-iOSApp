@@ -13,25 +13,33 @@ protocol SortMenuDelegate: AnyObject {
     func didSelectLanguage(with language: String)
 }
 
-class SortMenuVC: UIViewController {
+class SortMenuVC: UIViewController{
+  
 
     private var transparentView     : UIView!
     private var sortMenu            = UITableView()
-    var languages                   = ["All languages"]
+    var languages                   = ["All"]
 
     let height: CGFloat             = 300
     weak var delegate               : SortMenuDelegate!
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nil, bundle: nil)
-        sortMenu.delegate = self
-        sortMenu.dataSource = self
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
+    func updateSortMenuData(with repos: [Repo]) {
+        
+        var languageSet: Set<String> = []
+        languages = ["All"]
+        for repo in repos {
+            languageSet.insert(repo.language ?? "No language added")
+        }
+        languages.append(contentsOf: Array(languageSet))
+    }
 
     func configureTransparentView(superView: UIView) {
 
@@ -54,7 +62,10 @@ class SortMenuVC: UIViewController {
 
     func configureSortMenu(_ window: UIWindow){
 
+        sortMenu.delegate = self
+        sortMenu.dataSource = self
         window.addSubview(sortMenu)
+        sortMenu.reloadData()
         sortMenu.backgroundColor = .systemBackground
         sortMenu.translatesAutoresizingMaskIntoConstraints = false
         sortMenu.frame = CGRectMake(0, window.frame.height, window.frame.width, height)
@@ -74,6 +85,7 @@ class SortMenuVC: UIViewController {
         }
 
     }
+    
 }
 
 extension SortMenuVC: UITableViewDelegate, UITableViewDataSource {
@@ -84,7 +96,6 @@ extension SortMenuVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = sortMenu.dequeueReusableCell(withIdentifier: ReuseId.sortMenuCell, for: indexPath) as! SortMenuCell
         let language = languages[indexPath.row]
-//        cell.languageLogo.image = UIHelper.configureLanguageLogo(with: language, to: cell.languageLogo)
         cell.set(label: language)
         return cell
     }

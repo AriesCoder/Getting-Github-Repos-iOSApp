@@ -14,15 +14,17 @@ class BookmarksVC: UIViewController {
     }
     
     var tableView   = UITableView()
+//    var originRepos = [Repo]()
     var repos       = [Repo]()
-    
+//    let sortMenuVC  = SortMenuVC()
     var dataSource  : UITableViewDiffableDataSource<BookmarkSection, Repo>!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-    
         configureTableView()
+//        sortMenuVC.delegate = self
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Sort", style: .plain, target: self, action: #selector(sortBtnTapped))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -30,20 +32,30 @@ class BookmarksVC: UIViewController {
         getBookmarkedRepo()
     }
     
+    @objc func sortBtnTapped() {
+        print("sort btn tapped")
+//        guard !repos.isEmpty else {return}
+//        sortMenuVC.configureTransparentView(superView: view.self)
+    }
+
     func getBookmarkedRepo(){
         PersistenceManager.retrieveBookmarks { [weak self] result in
             guard let self = self else{ return }
             
             switch result {
-            case .success(let repos):
-                if repos.isEmpty{
+            case .success(let repoArr):
+                if repoArr.isEmpty{
                     self.showEmptyStateView(with: "Bookmark is empty", img: Icons.bookmark!, in: self.view)
                 } else {
-                    self.repos = repos
-                    DispatchQueue.main.async { [self] in
+                    self.repos.append(contentsOf: repoArr)
+//                    self.originRepos.append(contentsOf: repoArr)
+
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else{return}
                         self.view.bringSubviewToFront(self.tableView)
-                        self.updateData(repos: repos)
+                        self.updateData(repos: repoArr)
                     }
+//                    self.sortMenuVC.updateSortMenuData(with: self.originRepos)
                 }
                 
             case .failure(let error):
@@ -82,8 +94,6 @@ class BookmarksVC: UIViewController {
         }
     }
     
-    
-    
 }
 
 extension BookmarksVC: UITableViewDelegate {
@@ -101,7 +111,6 @@ extension BookmarksVC: UITableViewDelegate {
         navigationController?.pushViewController(destVC, animated: true)
     }
     
-    
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             guard let self = self else { return }
@@ -112,10 +121,14 @@ extension BookmarksVC: UITableViewDelegate {
                     self.presentGRAlert(title: "Unable to remove", message: error.rawValue)
                 } else {
                     self.repos.remove(at: indexPath.row)
+//                    self.originRepos.append(contentsOf: self.repos)
                     self.updateData(repos: self.repos)
                     if self.repos.isEmpty{
                         self.showEmptyStateView(with: "Bookmark is empty", img: Icons.bookmark!, in: self.view)
                     }
+                   //set language array for sortMenu
+//                    self.sortMenuVC.updateSortMenuData(with: self.repos)
+                    
                     completion(true)
                 }
             }
@@ -128,3 +141,31 @@ extension BookmarksVC: UITableViewDelegate {
     }
 
 }
+
+//extension BookmarksVC: SortMenuDelegate {
+//
+//    func didSelectLanguage(with language: String) {
+//
+//        //sort the reposTable with the selected language
+//        if language == "All" {
+//            updateData(repos: originRepos)
+//            repos = originRepos
+//            tableView.setEditing(true, animated: true)
+//        }
+//        else if language == "No language added" {
+//            repos = originRepos.filter({ repo in
+//                repo.language == nil
+//            })
+//            updateData(repos: repos)
+////            tableView.setEditing(false, animated: true)
+//        }
+//        else {
+//            repos = originRepos.filter({ repo in
+//                repo.language == language
+//            })
+//            updateData(repos: repos)
+////            tableView.setEditing(false, animated: true)
+//        }
+//    }
+//}
+        

@@ -19,7 +19,7 @@ class RepoListVC: UIViewController {
     let reposTable          = UITableView()
     let headerView          = UIView()
     var repos               = [Repo]()
-    var filteredRepos       = [Repo]()
+    var originalRepos       = [Repo]()
     let searchView          = UIView()
     let sortMenuVC          = SortMenuVC()
 
@@ -45,6 +45,12 @@ class RepoListVC: UIViewController {
         configureNavBar()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateData(repos: originalRepos)
+        repos = originalRepos
+    }
+    
 //MARK: - set up Navigation Bar
     func configureNavBar() {
         
@@ -66,8 +72,8 @@ class RepoListVC: UIViewController {
                 let userInfo = try await networkManager.getUserInfo(username: username)
                 configureUIs(user: userInfo)
             } catch {
-                if let grError = error as? GRError {
-                    presentGRAlert(title: "Something went wrong", message: grError.rawValue)
+                if let _ = error as? GRError {
+                    presentGRAlert(title: "Something went wrong", message: "Please check username again!")
                 }else{
                     presentDefaultError()
                 }
@@ -85,6 +91,7 @@ class RepoListVC: UIViewController {
                 if repoArr.isEmpty {
                     emptyRepoView()
                 }else{
+                    originalRepos.append(contentsOf: repoArr)
                     repos.append(contentsOf: repoArr)
                     
                     DispatchQueue.main.async {
@@ -93,15 +100,11 @@ class RepoListVC: UIViewController {
                     }
                     
                   //pass data of repo array to SortMenuVC
-                    var languageSet: Set<String> = []
-                    for repo in repos {
-                        languageSet.insert(repo.language ?? "No language added")
-                    }
-                    sortMenuVC.languages.append(contentsOf: Array(languageSet))
+                    sortMenuVC.updateSortMenuData(with: originalRepos)
                 }
             } catch {
-                if let grErr = error as? GRError {
-                    presentGRAlert(title: "Something went wrong", message: grErr.rawValue)
+                if let _ = error as? GRError {
+                    presentGRAlert(title: "Something went wrong", message: "Please check username again!")
                 } else {
                     presentDefaultError()
                 }
@@ -129,8 +132,7 @@ class RepoListVC: UIViewController {
     }
 
     func updateData(repos: [Repo]) {
-
-        var snapShot = NSDiffableDataSourceSnapshot<Section, Repo>()
+        var snapShot        = NSDiffableDataSourceSnapshot<Section, Repo>()
         snapShot.appendSections([.main])
         snapShot.appendItems(repos)
         DispatchQueue.main.async {
@@ -177,10 +179,8 @@ class RepoListVC: UIViewController {
             reposTable.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             reposTable.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             reposTable.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding)
-
         ])
     }
-    
 }
 
 //MARK: - extension Delegate
@@ -192,12 +192,10 @@ extension RepoListVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        //send repo info to next view
         let repo = repos[indexPath.row]
         let destVC = RepoDetailVC(repo: repo)
         navigationController?.pushViewController(destVC, animated: true)
     }
-    
 }
 
 //MARK: - extension SortMenuDelegate
@@ -206,24 +204,24 @@ extension RepoListVC: SortMenuDelegate {
     func didSelectLanguage(with language: String) {
         
         //sort the reposTable with the selected language
-        if language == "All languages"{
-            updateData(repos: repos)
+        if language == "All" {
+            updateData(repos: originalRepos)
+            repos = originalRepos
         }
         else if language == "No language added" {
-            filteredRepos = repos.filter({ repo in
+            repos = originalRepos.filter({ repo in
                 repo.language == nil
             })
-            updateData(repos: filteredRepos)
+            updateData(repos: repos)
+
         }
         else {
-            filteredRepos = repos.filter({ repo in
+            repos = originalRepos.filter({ repo in
                 repo.language == language
             })
-            updateData(repos: filteredRepos)
+            updateData(repos: repos)
         }
     }
-    
-    
 }
         
     

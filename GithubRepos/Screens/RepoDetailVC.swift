@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SafariServices
 
 class RepoDetailVC: UIViewController {
     
@@ -18,22 +19,25 @@ class RepoDetailVC: UIViewController {
     }
     
     let headerView              = UIView()
+    let emptyCollectionView     = EmptyCollectionView(frame: .zero)
     var contributorCollection   : UICollectionView!
     let commitTable             = UITableView()
     
     var dataSource              : UICollectionViewDiffableDataSource<Section, Contributor>!
     var tableDataSource         : UITableViewDiffableDataSource<TableSection, Commit>!
     
+    let contributorIcon         = UIImageView(image: UIImage(systemName: "person.3"))
     var contributors            = [Contributor]()
     var commits                 = [Commit]()
+    let commitLabel             = GRSecondaryTitleLabel(fontSize: 17)
+    let commitIcon              = UIImageView(image: UIImage(systemName: "pencil.line"))
     var repo                    : Repo!
     var contributor             : Contributor!
-    let contributorLabel        = GRTitleLabel(textAlighment: .center, fontSize: 20)
+    let contributorLabel        = GRSecondaryTitleLabel(fontSize: 17)
     
     init(repo: Repo) {
         super.init(nibName: nil, bundle: nil)
         self.repo = repo
-        contributorLabel.text = "Contributor(s)"
     }
     
     required init?(coder: NSCoder) {
@@ -42,9 +46,8 @@ class RepoDetailVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark.fill"), style: .plain, target: self, action: #selector(addBtnTapped))
         
+        configureViewController()
         getContributor(of: repo)
         getCommits(of: repo)
         configureHeaderView()
@@ -52,6 +55,13 @@ class RepoDetailVC: UIViewController {
         configureTableView()
         layoutUIs()
     }
+    
+//    override func viewWillDisappear(_ animated: Bool) {
+//            super.viewWillDisappear(animated)
+//                print("REpodetail view will disappear")
+//                navigationController?.popViewController(animated: true)
+//            
+//        }
 
 //MARK: - Configure views
     func configureCollectionView() {
@@ -60,6 +70,8 @@ class RepoDetailVC: UIViewController {
         view.addSubview(contributorCollection)
         view.addSubview(contributorLabel)
         contributorCollection.delegate          = self
+        contributorCollection.layer.cornerRadius   = 20
+        contributorCollection.layer.masksToBounds  = true
         contributorCollection.register(ContributorCell.self, forCellWithReuseIdentifier: ContributorCell.reuseID)
         configureDiffableDataSource()
     }
@@ -82,12 +94,20 @@ class RepoDetailVC: UIViewController {
         Task{
             do{
                 let contributors = try await NetworkManager().getContributor(with: repo.contributorsUrl)
-                    self.contributors.append(contentsOf: contributors)
-                    DispatchQueue.main.async {
-                        self.view.bringSubviewToFront(self.contributorCollection)
-                        self.updateData(contributors: self.contributors)
-                    }
-                } catch {
+                guard !contributors.isEmpty else{
+                    emptyCollectionView.isHidden    = false
+                    contributorCollection.isHidden  = true
+                    emptyCollectionView.set(message: "There is no contributor for this repo.")
+                    return
+                }
+                emptyCollectionView.isHidden        = true
+                contributorCollection.isHidden      = false
+                self.contributors.append(contentsOf: contributors)
+                DispatchQueue.main.async {
+                    self.view.bringSubviewToFront(self.contributorCollection)
+                    self.updateData(contributors: self.contributors)
+                }
+            } catch {
                 if let _ = error as? GRError {
                     emptyRepoDetailView()
                 }else{
@@ -183,6 +203,8 @@ class RepoDetailVC: UIViewController {
 //MARK: - UIs
     func configureHeaderView() {
         view.addSubview(headerView)
+        headerView.layer.cornerRadius   = 20
+        headerView.layer.masksToBounds  = true
         
         let repoDetailHeaderVC = RepoDetailHeaderVC(repo: repo)
         self.addChild(repoDetailHeaderVC)
@@ -191,29 +213,78 @@ class RepoDetailVC: UIViewController {
         repoDetailHeaderVC.didMove(toParent: self)
     }
     
+    func configureViewController(){
+        
+        view.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1.0)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "bookmark.fill"), style: .plain, target: self, action: #selector(addBtnTapped))
+        navigationController?.navigationBar.barTintColor   = .systemBackground
+        
+        view.addSubview(contributorIcon)
+        contributorIcon.tintColor   = .black
+        contributorLabel.text       = "Contributor(s)"
+        
+        view.addSubview(commitIcon)
+        view.addSubview(commitLabel)
+        commitIcon.tintColor        = .black
+        commitLabel.text            = "Commit(s)"
+        
+        view.addSubview(emptyCollectionView)
+        emptyCollectionView.backgroundColor = .systemBackground
+        emptyCollectionView.layer.cornerRadius = 20
+        emptyCollectionView.layer.masksToBounds = true
+    }
+    
     func layoutUIs() {
         
         headerView.translatesAutoresizingMaskIntoConstraints              = false
         contributorCollection.translatesAutoresizingMaskIntoConstraints   = false
         contributorLabel.translatesAutoresizingMaskIntoConstraints        = false
         commitTable.translatesAutoresizingMaskIntoConstraints             = false
+        contributorIcon.translatesAutoresizingMaskIntoConstraints         = false
+        commitIcon.translatesAutoresizingMaskIntoConstraints              = false
+        emptyCollectionView.translatesAutoresizingMaskIntoConstraints     = false
+        
+        let secondLabelHeight: CGFloat  = 17
+        let padding: CGFloat            = 20
+        let nextViewPadding: CGFloat    = 10
+        let iconHeight: CGFloat         = 15
+        let textIconPadding: CGFloat    = 5
         
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 150),
+            headerView.heightAnchor.constraint(equalToConstant: 140),
             
-            contributorLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 10),
-            contributorLabel.heightAnchor.constraint(equalToConstant: 17),
-            contributorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            contributorIcon.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            contributorIcon.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: nextViewPadding),
+            contributorIcon.heightAnchor.constraint(equalToConstant: iconHeight),
+            contributorIcon.widthAnchor.constraint(equalToConstant: 20),
             
-            contributorCollection.topAnchor.constraint(equalTo: contributorLabel.bottomAnchor),
+            contributorLabel.topAnchor.constraint(equalTo: contributorIcon.topAnchor),
+            contributorLabel.heightAnchor.constraint(equalToConstant: secondLabelHeight),
+            contributorLabel.leadingAnchor.constraint(equalTo: contributorIcon.trailingAnchor, constant: textIconPadding),
+            
+            contributorCollection.topAnchor.constraint(equalTo: contributorLabel.bottomAnchor, constant: 5),
             contributorCollection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             contributorCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            contributorCollection.heightAnchor.constraint(equalToConstant: 150),
+            contributorCollection.heightAnchor.constraint(equalToConstant: 120),
             
-            commitTable.topAnchor.constraint(equalTo: contributorCollection.bottomAnchor, constant: 15),
+            emptyCollectionView.topAnchor.constraint(equalTo: contributorLabel.bottomAnchor, constant: 5),
+            emptyCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyCollectionView.heightAnchor.constraint(equalToConstant: 120),
+            
+            commitIcon.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: padding),
+            commitIcon.topAnchor.constraint(equalTo: contributorCollection.bottomAnchor, constant: nextViewPadding),
+            commitIcon.heightAnchor.constraint(equalToConstant: iconHeight),
+            commitIcon.widthAnchor.constraint(equalTo: commitIcon.heightAnchor),
+            
+            commitLabel.leadingAnchor.constraint(equalTo: commitIcon.trailingAnchor, constant: textIconPadding),
+            commitLabel.topAnchor.constraint(equalTo: commitIcon.topAnchor),
+            commitLabel.heightAnchor.constraint(equalToConstant: secondLabelHeight),
+            
+            commitTable.topAnchor.constraint(equalTo: commitIcon.bottomAnchor, constant: 5),
             commitTable.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             commitTable.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             commitTable.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -239,6 +310,13 @@ extension RepoDetailVC: UICollectionViewDelegate, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let commit = commits[indexPath.row]
+        guard let url = URL(string: commit.htmlUrl) else{
+            presentGRAlert(title: "Invalid URL", message: "The url attached to this commit is invalid")
+            return}
+        
+        presentSafariVC(with: url)
     }
 
 }

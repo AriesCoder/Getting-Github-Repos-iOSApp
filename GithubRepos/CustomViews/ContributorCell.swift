@@ -36,7 +36,7 @@ class ContributorCell: UICollectionViewCell {
         let padding: CGFloat    = 20
         
         NSLayoutConstraint.activate([
-            contributorImg.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            contributorImg.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
             contributorImg.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
             contributorImg.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             contributorImg.heightAnchor.constraint(equalTo: contributorImg.widthAnchor),
@@ -44,7 +44,7 @@ class ContributorCell: UICollectionViewCell {
             contributorName.topAnchor.constraint(equalTo: contributorImg.bottomAnchor, constant: 10),
             contributorName.centerXAnchor.constraint(equalTo: contributorImg.centerXAnchor),
             contributorName.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            contributorName.heightAnchor.constraint(equalToConstant: 20)
+            contributorName.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
 }

@@ -15,7 +15,9 @@ extension UIViewController{
         
         //async doesnt need to run code on main thread, so dont need to dispatchqueue.async.main for this code
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let action = UIAlertAction(title: "Ok", style: .default)
+        let action = UIAlertAction(title: "Ok", style: .default){action in
+            self.navigationController?.popViewController(animated: true)
+        }
         alertController.addAction(action)
         present(alertController, animated: true)
     }
@@ -23,7 +25,9 @@ extension UIViewController{
     func presentDefaultError(){
         
         let alertController = UIAlertController(title: "Something went wrong", message: "We were unable to complete your task, please try again", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Ok", style: .default)
+        let action = UIAlertAction(title: "Ok", style: .default){action in
+            self.navigationController?.popViewController(animated: true)
+        }
         alertController.addAction(action)
         present(alertController, animated: true)
     }
@@ -40,6 +44,13 @@ extension UIViewController{
         let emptyStateView = GREmptyStateView(message: msg, img: img)
         emptyStateView.frame = view.bounds
         view.addSubview(emptyStateView)
+    }
+    
+    func presentSafariVC(with url: URL){
+        
+        let safariVC = SFSafariViewController(url: url)
+        safariVC.preferredControlTintColor = .systemGreen
+        present(safariVC, animated: true)
     }
 }
 
